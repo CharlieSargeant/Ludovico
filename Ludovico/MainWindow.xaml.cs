@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 using Discord;
 using Discord.WebSocket;
@@ -9,7 +7,8 @@ namespace Ludovico
 {
     public partial class MainWindow : Window
     {
-        private DiscordBot _bot;
+        private BotService _botService;
+        private BotEventHandler _botEventHandler;
         private bool _isConnected = false;
 
         // Guild and channel data
@@ -20,10 +19,8 @@ namespace Ludovico
         {
             InitializeComponent();
 
-            _bot = new DiscordBot("Bot_Token");
-            _bot.LogReceived += LogAsync;
-            _bot.MessageReceived += MessageReceivedAsync;
-            _bot.Ready += BotReadyAsync;
+            _botService = new BotService("Bot_Token");
+            _botEventHandler = new BotEventHandler(this, _botService);
 
             GuildComboBox.SelectionChanged += GuildComboBox_SelectionChanged;
         }
@@ -32,13 +29,13 @@ namespace Ludovico
         {
             if (!_isConnected)
             {
-                await _bot.ConnectAsync();
+                await _botService.ConnectAsync();
                 _isConnected = true;
                 ConnectButton.Content = "Disconnect Bot";
             }
             else
             {
-                await _bot.DisconnectAsync();
+                await _botService.DisconnectAsync();
                 _isConnected = false;
                 ConnectButton.Content = "Connect Bot";
             }
@@ -58,38 +55,21 @@ namespace Ludovico
             }
         }
 
-        private Task LogAsync(LogMessage log)
+        public void SetupGuilds(IEnumerable<SocketGuild> guilds)
         {
-            Dispatcher.Invoke(() => LogTextBox.AppendText(log.Message + "\n"));
-            return Task.CompletedTask;
-        }
+            _guilds.Clear();
+            _guildChannels.Clear();
 
-        private Task MessageReceivedAsync(SocketMessage message)
-        {
-            if (message.Author.IsBot) return Task.CompletedTask;
-            Dispatcher.Invoke(() => LogTextBox.AppendText($"Message received: {message.Content}\n"));
-            return Task.CompletedTask;
-        }
-
-        private Task BotReadyAsync()
-        {
-            Dispatcher.Invoke(() =>
+            foreach (var guild in guilds)
             {
-                _guilds.Clear();
-                _guildChannels.Clear();
+                _guilds.Add(new KeyValuePair<string, ulong>(guild.Name, guild.Id));
+                var channels = new List<ITextChannel>(guild.TextChannels);
+                _guildChannels[guild.Id] = channels;
+            }
 
-                foreach (var guild in _bot.Client.Guilds)
-                {
-                    _guilds.Add(new KeyValuePair<string, ulong>(guild.Name, guild.Id));
-                    var channels = new List<ITextChannel>(guild.TextChannels);
-                    _guildChannels[guild.Id] = channels;
-                }
-
-                GuildComboBox.ItemsSource = _guilds;
-                GuildComboBox.DisplayMemberPath = "Key";
-                GuildComboBox.SelectedValuePath = "Value";
-            });
-            return Task.CompletedTask;
+            GuildComboBox.ItemsSource = _guilds;
+            GuildComboBox.DisplayMemberPath = "Key";
+            GuildComboBox.SelectedValuePath = "Value";
         }
 
         private void GuildComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -106,7 +86,7 @@ namespace Ludovico
         {
             try
             {
-                var channel = _bot.Client.GetChannel(ulong.Parse(channelId)) as ITextChannel;
+                var channel = _botService.GetChannel(ulong.Parse(channelId));
                 if (channel != null)
                 {
                     await channel.SendMessageAsync(message);
