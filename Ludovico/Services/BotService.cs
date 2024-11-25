@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Ludovico
+namespace Ludovico.Services
 {
     public class BotService
     {

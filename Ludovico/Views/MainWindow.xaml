@@ -1,0 +1,48 @@
+﻿<Window x:Class="Ludovico.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ludovico" Height="450" Width="600">
+    <Grid>
+        <!-- Define RowDefinitions for the layout -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Row for Menu -->
+            <RowDefinition Height="Auto" />
+            <!-- Row for ConnectButton -->
+            <RowDefinition Height="Auto" />
+            <!-- Row for ComboBoxes -->
+            <RowDefinition Height="*" />
+            <!-- This will make the log area take up available space -->
+            <RowDefinition Height="Auto" />
+            <!-- Row for Message input and Send button -->
+        </Grid.RowDefinitions>
+
+        <!-- Menu bar in the first row -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="Add Token" Click="AddToken_Click"/>
+                <MenuItem Header="Load Tokens" Click="LoadTokens_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Button to connect/disconnect bot -->
+        <Button Name="ConnectButton" Grid.Row="1" Content="Connect Bot" Width="120" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="ConnectButton_Click"/>
+        <ComboBox Name="TokenComboBox" Grid.Row="1" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,10,0,0" SelectionChanged="TokenComboBox_SelectionChanged"/>
+
+        <!-- ComboBox for selecting a server -->
+        <ComboBox Name="GuildComboBox" Grid.Row="2" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
+
+        <!-- ComboBox for selecting a channel -->
+        <ComboBox Name="ChannelComboBox" Grid.Row="2" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,10,10,0"/>
+
+        <!-- TextBox to display logs, in the first row -->
+        <TextBox Name="LogTextBox" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,10" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+
+        <!-- TextBox to type message to send, in the second row -->
+        <TextBox Name="MessageTextBox" Grid.Row="4" HorizontalAlignment="Stretch" Height="30" Margin="10,0,140,10"/>
+
+        <!-- Button to send message, aligned to the right and below the message input -->
+        <Button Name="SendMessageButton" Grid.Row="4" Content="Send Message" Width="120" Height="30" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10" Click="SendMessageButton_Click"/>
+
+    </Grid>
+</Window>

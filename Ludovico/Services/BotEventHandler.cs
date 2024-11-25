@@ -2,8 +2,10 @@
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
+using Ludovico.Views;
+using System.Diagnostics;
 
-namespace Ludovico
+namespace Ludovico.Services
 {
     public class BotEventHandler
     {
